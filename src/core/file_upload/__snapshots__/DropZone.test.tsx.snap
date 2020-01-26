@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DropZone it matches the snapshot 1`] = `
+<div>
+  <section
+    style={
+      Object {
+        "backgroundColor": "#e0e0e0",
+        "height": "150px",
+        "margin": "0 auto",
+        "width": "500px",
+      }
+    }
+  >
+    <div
+      onBlur={[Function]}
+      onClick={[Function]}
+      onDragEnter={[Function]}
+      onDragLeave={[Function]}
+      onDragOver={[Function]}
+      onDrop={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      tabIndex={0}
+    >
+      <input
+        accept=".csv"
+        autoComplete="off"
+        multiple={true}
+        onChange={[Function]}
+        onClick={[Function]}
+        style={
+          Object {
+            "display": "none",
+          }
+        }
+        tabIndex={-1}
+        type="file"
+      />
+      <div
+        style={
+          Object {
+            "padding": "50px 0",
+          }
+        }
+      >
+        <p
+          className="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary MuiTypography-alignCenter"
+        >
+          Click here or drop a file to upload!
+        </p>
+      </div>
+    </div>
+  </section>
+  <div>
+    
+  </div>
+</div>
+`;
