@@ -6,6 +6,7 @@ import DataTable from "./table/DataTable";
 import {CollapsibleTree} from "./d3charts/CollapsibleTree";
 import RestClient from "./utils/RestClient";
 import {AxiosResponse} from 'axios';
+import {SankeyDiagram} from "./d3charts/SankeyDiagram";
 
 const width = 500, height = 350;
 
@@ -132,6 +133,21 @@ export default class MainContainer extends Component<{ classes: any }, MainConta
         //     </Grid>);
     };
 
+    displaySankeyDiagram = (idName: string): JSX.Element => {
+        // if (this.state.regressionStatus) {
+
+        return (<div className={this.props.classes.paper}>
+            <SankeyDiagram idName={idName} width={width} height={height}/>
+        </div>);
+        // }
+        // return (
+        //     <Grid item xs={4}>
+        //         <div className={this.props.classes.dataPreview}>
+        //             <Typography color={"textSecondary"}>No data provided</Typography>
+        //         </div>
+        //     </Grid>);
+    };
+
     async queryRocData() {
         let rocData: RocData = {rocList: [], confMatrixList: [], thresholdList: []};
         let promoise: Promise<AxiosResponse<RocData>> = RestClient.post(`http://localhost:8888${RestClient.ENDPOINT_TRAIN}`, {},
@@ -160,6 +176,9 @@ export default class MainContainer extends Component<{ classes: any }, MainConta
                 </Grid>
                 <Grid item xs={12} direction="row">
                     {this.displayCollapsableTree("subTree")}
+                </Grid>
+                <Grid item xs={12} direction="row">
+                    {this.displaySankeyDiagram("sankey")}
                 </Grid>
             </Grid>
         )
