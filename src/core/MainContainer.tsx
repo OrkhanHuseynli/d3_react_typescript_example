@@ -131,15 +131,13 @@ export default class MainContainer extends Component<{ classes: any }, MainConta
     }
 
     displaySelection = (chartType: string): JSX.Element => {
+        let chart: JSX.Element;
         if (chartType === "tree") {
-            return (<Grid item xs={12} direction="row">
-                        {this.displayCollapsableTree("subTree")}
-                    </Grid> )
+            chart =  this.displayCollapsableTree("subTree");
         } else {
-            return (<Grid item xs={12} direction="row">
-                         {this.displaySankeyDiagram("sankey")}
-                        </Grid>)
+            chart = this.displaySankeyDiagram("sankey");
         }
+        return (<Grid item xs={12} direction="row">{chart}</Grid>)
     }
 
     displayCollapsableTree = (idName: string): JSX.Element => {
