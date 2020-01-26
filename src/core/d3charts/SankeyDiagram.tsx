@@ -5,7 +5,6 @@ import {Component} from "react";
 import './CollapsibleTree.css';
 import {ConfusionMatrix} from "../MainContainer";
 import {SankeyGraph} from "d3-sankey";
-import {SankeyLayout} from "d3-sankey";
 
 export type CurveProps = {
     idName: string
@@ -45,6 +44,7 @@ const edgeColor: any = "output";
 // </select>`, {
 //     value: new URLSearchParams(`<a href>` +`.search`).get("align") || "justify"
 // });
+const align = d3sankey.sankeyLeft;
 
 export class SankeyDiagram extends Component<CurveProps, CurveState> {
 
@@ -79,39 +79,50 @@ export class SankeyDiagram extends Component<CurveProps, CurveState> {
     }
 }
 
-let buildSvg = (targetId: string) => {
-    // const d3 = require("d3@5"
+
+const scaleColor = d3.scaleOrdinal(d3.schemeCategory10);
+
+const color = (name: string) => {
+    // let scaleColor = d3.scaleOrdinal(d3.schemeCategory10);
+    console.log(name);
+    let str = name.substring(0,name.indexOf(" "));
+    // let str = name.replace(/ .*/, "");
+    console.log(str);
+    console.log(scaleColor(str));
+    return scaleColor(str);
+};
+
+const format = () => {
+    const f = d3.format(",.0f");
+    return (d: any) => `${f(d)} TWh`;
+};
+
+const sankeyAnom = (obj: SankeyGraph<any, any>, width:number, height:number): SankeyGraph<{}, {}> => {
+    console.info("sankeyAnom called");
+    // @ts-ignore
+    const sankey = d3sankey.sankey()
+        .nodeId((d: any) => {
+            return d.index
+        })
+        // .nodeAlign(d3[`sankey${align[0].toUpperCase()}${align.slice(1)}`])
+        // @ts-ignore
+        // .nodeAlign(d3[`sankey${align[0].toUpperCase()}${align.slice(1)}`])
+        .nodeAlign(align)
+        .nodeWidth(15)
+        .nodePadding(10)
+        .extent([[1, 5], [width - 1, height - 5]]);
+
+    console.info(sankey);
+
+    return sankey({
+        nodes: obj.nodes.map((d: any) => Object.assign({}, d)),
+        links: obj.links.map((d: any) => Object.assign({}, d))
+    });
+};
+
+const buildSvg = (targetId: string) => {
     const margin = ({top: 10, right: 120, bottom: 10, left: 40});
     const {width, height} = {width: 954, height: 600};
-
-    let format = () => {
-        const f = d3.format(",.0f");
-        return (d: any) => `${f(d)} TWh`;
-    };
-
-
-    let sankeyAnom = (obj: SankeyGraph<any, any>): SankeyGraph<{}, {}> => {
-        console.info("sankeyAnom called");
-        // @ts-ignore
-        const sankey = d3sankey.sankey()
-            .nodeId((d: any) => {
-                return d.index
-            })
-            // .nodeAlign(d3[`sankey${align[0].toUpperCase()}${align.slice(1)}`])
-            // @ts-ignore
-            // .nodeAlign(d3[`sankey${align[0].toUpperCase()}${align.slice(1)}`])
-            .nodeAlign(d3sankey.sankeyLeft)
-            .nodeWidth(15)
-            .nodePadding(10)
-            .extent([[1, 5], [width - 1, height - 5]]);
-
-        console.info(sankey);
-
-        return sankey({
-            nodes: obj.nodes.map((d: any) => Object.assign({}, d)),
-            links: obj.links.map((d: any) => Object.assign({}, d))
-        });
-    };
 
     let data = {
         "nodes": [{"name": "Agricultural 'waste'"}, {"name": "Bio-conversion"}, {"name": "Liquid"}, {"name": "Losses"}, {"name": "Solid"}, {"name": "Gas"}, {"name": "Biofuel imports"}, {"name": "Biomass imports"}, {"name": "Coal imports"}, {"name": "Coal"}, {"name": "Coal reserves"}, {"name": "District heating"}, {"name": "Industry"}, {"name": "Heating and cooling - commercial"}, {"name": "Heating and cooling - homes"}, {"name": "Electricity grid"}, {"name": "Over generation / exports"}, {"name": "H2 conversion"}, {"name": "Road transport"}, {"name": "Agriculture"}, {"name": "Rail transport"}, {"name": "Lighting & appliances - commercial"}, {"name": "Lighting & appliances - homes"}, {"name": "Gas imports"}, {"name": "Ngas"}, {"name": "Gas reserves"}, {"name": "Thermal generation"}, {"name": "Geothermal"}, {"name": "H2"}, {"name": "Hydro"}, {"name": "International shipping"}, {"name": "Domestic aviation"}, {"name": "International aviation"}, {"name": "National navigation"}, {"name": "Marine algae"}, {"name": "Nuclear"}, {"name": "Oil imports"}, {"name": "Oil"}, {"name": "Oil reserves"}, {"name": "Other waste"}, {"name": "Pumped heat"}, {"name": "Solar PV"}, {"name": "Solar Thermal"}, {"name": "Solar"}, {"name": "Tidal"}, {"name": "UK land based bioenergy"}, {"name": "Wave"}, {"name": "Wind"}],
@@ -212,22 +223,11 @@ let buildSvg = (targetId: string) => {
 
 
     let chart = () => {
-        console.info("chart called");
         let svg = d3.select(targetId)
         // @ts-ignore
             .attr("viewBox", [0, 0, width, height]);
 
-        const {nodes, links} = sankeyAnom(data);
-
-        let color = (name: string) => {
-            let scaleColor = d3.scaleOrdinal(d3.schemeCategory10);
-            console.log(name);
-            let str = name.substring(0,name.indexOf(" "));
-            // let str = name.replace(/ .*/, "");
-            console.log(str);
-            console.log(scaleColor(str));
-            return scaleColor(str);
-        };
+        const {nodes, links} = sankeyAnom(data, width, height);
 
         svg.append("g")
             .attr("stroke", "#000")
