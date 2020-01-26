@@ -84,13 +84,6 @@ let buildSvg = (targetId: string) => {
     const margin = ({top: 10, right: 120, bottom: 10, left: 40});
     const {width, height} = {width: 954, height: 600};
 
-    let color = (name: string) => {
-        let scaleColor = d3.scaleOrdinal(d3.schemeCategory10);
-        console.log(name);
-        console.log(scaleColor(name));
-            return scaleColor(name);
-    };
-
     let format = () => {
         const f = d3.format(",.0f");
         return (d: any) => `${f(d)} TWh`;
@@ -225,6 +218,16 @@ let buildSvg = (targetId: string) => {
             .attr("viewBox", [0, 0, width, height]);
 
         const {nodes, links} = sankeyAnom(data);
+
+        let color = (name: string) => {
+            let scaleColor = d3.scaleOrdinal(d3.schemeCategory10);
+            console.log(name);
+            let str = name.substring(0,name.indexOf(" "));
+            // let str = name.replace(/ .*/, "");
+            console.log(str);
+            console.log(scaleColor(str));
+            return scaleColor(str);
+        };
 
         svg.append("g")
             .attr("stroke", "#000")
