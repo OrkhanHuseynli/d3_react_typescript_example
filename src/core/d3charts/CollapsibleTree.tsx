@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d3 from 'd3'
 import {Component} from "react";
-import './d3charts.css';
+import './CollapsibleTree.css';
 import {ConfusionMatrix} from "../MainContainer";
 
 export type CurveProps = {

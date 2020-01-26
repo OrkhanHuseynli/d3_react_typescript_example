@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CollapsibleTree it matches the snapshot 1`] = `
+<div>
+  <svg
+    id="sample"
+  />
+</div>
+`;
