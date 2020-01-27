@@ -1,6 +1,6 @@
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 const ENDPOINT_UPLOAD = "/api/v1/upload";
-const ENDPOINT_TRAIN = "/api/v1/train";
+const QUERY_ENDPOINT = "/api/v1/receive";
 
 export default class RestClient {
     static post = (url: string, body: any, config: AxiosRequestConfig) : Promise<AxiosResponse> => {
@@ -25,5 +25,5 @@ export default class RestClient {
         });
     };
     static ENDPOINT_UPLOAD = ENDPOINT_UPLOAD;
-    static ENDPOINT_TRAIN = ENDPOINT_TRAIN;
+    static QUERY_ENDPOINT = QUERY_ENDPOINT;
 }

@@ -3,27 +3,17 @@ import * as d3 from 'd3';
 import * as d3sankey from 'd3-sankey';
 import {Component} from "react";
 import './CollapsibleTree.css';
-import {ConfusionMatrix} from "../MainContainer";
 import {SankeyGraph} from "d3-sankey";
 import { sankeyData } from "./sankeyData";
 
-export type CurveProps = {
+export type DiagramProps = {
     idName: string
     width: any
     height: any
 }
-type CurveState = {
-    tooltip: Tooltip
+type DiagramState = {
 }
 
-type Tooltip = {
-    x: number
-    y: number
-    display: string
-    width: number
-    threshold: number
-    confusionMatrix: ConfusionMatrix
-}
 
 
 // const edgeColor: any = Object.assign(`<select>
@@ -47,9 +37,9 @@ const edgeColor: any = "output";
 // });
 const align = d3sankey.sankeyLeft;
 
-export class SankeyDiagram extends Component<CurveProps, CurveState> {
+export class SankeyDiagram extends Component<DiagramProps, DiagramState> {
 
-    constructor(props: CurveProps) {
+    constructor(props: DiagramProps) {
         super(props);
         this.state = {
             tooltip: {

@@ -16,54 +16,16 @@ type MainContainerState = {
     uploadStatus: boolean
     fileData: FileData
     regressionStatus: boolean
-    rocPointList: RocPointList,
-    confMatrixObjList: ConfusionMatrixObjectList
-    thresholdList: number[],
     selectedChartType: string
 }
-export type RocPoint = { a: number, b: number }
-export type RocPointList = Array<RocPoint>
-type RocList = Array<[number, number]>
-export type ConfusionMatrix = {
-    TP: number
-    TN: number
-    FP: number
-    FN: number
-}
-export type ConfusionMatrixObjectList = Array<ConfusionMatrix>
-
-type ConfusionMatrixList = Array<[[number, number], [number, number]]>
-type RocData = {
-    rocList: RocList
-    confMatrixList: ConfusionMatrixList,
-    thresholdList: number[]
+type ValueType = string
+type ExpectedData = {
+    valueType: ValueType
+    values: number[]
 }
 
 const createData = (name: string, value: string) => {
     return {name, value};
-};
-
-const transformToRocPointList = (rocList: RocList): RocPointList => {
-    console.info("transformToRocPointList");
-    let rocPointList: RocPointList = [];
-    rocList.forEach(rocPointArray => {
-        rocPointList.push({a: rocPointArray[0], b: rocPointArray[1]});
-    });
-    return rocPointList;
-};
-
-const transformToConfusionMatrixObjectList = (confList: ConfusionMatrixList): ConfusionMatrixObjectList => {
-    console.info("transformToConfusionMatrixObjectList");
-    let confMatrixObjectList: ConfusionMatrixObjectList = [];
-    confList.forEach(arr => {
-        let tp = arr[0][0];
-        let fp = arr[0][1];
-        let tn = arr[1][0];
-        let fn = arr[1][1];
-        let confMatrix: ConfusionMatrix = {TP: tp, FP: fp, TN: tn, FN: fn};
-        confMatrixObjectList.push(confMatrix);
-    });
-    return confMatrixObjectList;
 };
 
 export default class MainContainer extends Component<{ classes: any }, MainContainerState> {
@@ -73,18 +35,12 @@ export default class MainContainer extends Component<{ classes: any }, MainConta
             uploadStatus: false,
             regressionStatus: false,
             fileData: {fileName: "", dataSize: "", inputParamsCount: "", outputParamsCount: ""},
-            rocPointList: [],
-            confMatrixObjList: [],
-            thresholdList: [], 
             selectedChartType: "tree"
         };
         this.getUploadStatus = this.getUploadStatus.bind(this);
         this.displayDataPreviewSection = this.displayDataPreviewSection.bind(this);
-        this.displayTrainModelSection = this.displayTrainModelSection.bind(this);
-        this.displayCollapsableTree = this.displayCollapsableTree.bind(this);
         this.onStartClick = this.onStartClick.bind(this);
     }
-
 
     getUploadStatus = (status: boolean, data: FileData): void => {
         console.debug("Upload status: " + this.state.uploadStatus)
@@ -107,18 +63,9 @@ export default class MainContainer extends Component<{ classes: any }, MainConta
             provided</Typography></div>
     };
 
-
-    displayTrainModelSection = (): JSX.Element => {
-        return (
-            <div>
-                <Button variant="contained" color="primary" className={this.props.classes.button}
-                        disabled={!this.state.uploadStatus} onClick={this.onStartClick}>Start</Button>
-            </div>)
-    };
-
     onStartClick = (): void => {
-        console.log("START TRAINING");
-        this.queryRocData();
+        console.log("Getting the chart data");
+        this.queryData();
     };
 
     handleChange = (event:any) => {
@@ -126,7 +73,7 @@ export default class MainContainer extends Component<{ classes: any }, MainConta
       };
 
     displaySelectionBar = (): JSX.Element => {
-     return (<SelectionBar currentSelectedChartType={this.state.selectedChartType} 
+     return (<SelectionBar currentSelectedChartType={this.state.selectedChartType}
         handleChange={this.handleChange} classes={this.props.classes} />)
     }
 
@@ -139,37 +86,31 @@ export default class MainContainer extends Component<{ classes: any }, MainConta
         }
         return (<Grid item xs={12} direction="row">{chart}</Grid>)
     }
-
     displayCollapsableTree = (idName: string): JSX.Element => {
         return (<div className={this.props.classes.paper}>
             <CollapsibleTree idName={idName} width={width} height={height}/>
         </div>);
     };
 
-    displaySankeyDiagram = (idName: string): JSX.Element => {   
+    displaySankeyDiagram = (idName: string): JSX.Element => {
         return (<div className={this.props.classes.paper}>
             <SankeyDiagram idName={idName} width={width} height={height}/>
         </div>);
     };
 
-    async queryRocData() {
-        let rocData: RocData = {rocList: [], confMatrixList: [], thresholdList: []};
-        let promoise: Promise<AxiosResponse<RocData>> = RestClient.post(`http://localhost:8888${RestClient.ENDPOINT_TRAIN}`, {},
+    async queryData() {
+        let expectedData: ExpectedData = {valueType: "", values: []};
+        let promise: Promise<AxiosResponse<ExpectedData>> = RestClient.post(`http://localhost:8888${RestClient.QUERY_ENDPOINT}`, {},
             {headers: {'Content-Type': 'application/json'}, params: {filename: this.state.fileData.fileName}});
-        await promoise.then((res: AxiosResponse<RocData>) => {
-            console.info("ROC: getting roc points");
-            rocData.rocList = res.data.rocList;
-            rocData.confMatrixList = res.data.confMatrixList;
-            rocData.thresholdList = res.data.thresholdList
+        await promise.then((res: AxiosResponse<ExpectedData>) => {
+            console.info("Receiving data");
+            expectedData.valueType = res.data.valueType;
+            expectedData.values = res.data.values
         });
-        let rocPointList: RocPointList = transformToRocPointList(rocData.rocList);
-        let confMatrixObjList: ConfusionMatrixObjectList = transformToConfusionMatrixObjectList(rocData.confMatrixList);
+
         this.setState({
-            regressionStatus: rocData.rocList.length > 0,
-            rocPointList: rocPointList,
-            confMatrixObjList: confMatrixObjList,
-            thresholdList: rocData.thresholdList
-        })
+            regressionStatus: expectedData.valueType.length > 0,
+        });
     };
 
     render() {

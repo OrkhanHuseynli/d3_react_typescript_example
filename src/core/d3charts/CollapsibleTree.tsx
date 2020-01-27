@@ -2,7 +2,6 @@ import * as React from "react";
 import * as d3 from 'd3'
 import {Component} from "react";
 import './CollapsibleTree.css';
-import {ConfusionMatrix} from "../MainContainer";
 
 export type CurveProps = {
     idName: string
@@ -18,8 +17,7 @@ type Tooltip = {
     y: number
     display: string
     width: number
-    threshold: number
-    confusionMatrix: ConfusionMatrix
+    value: string
 }
 
 export class CollapsibleTree extends Component<CurveProps, CurveState> {
@@ -32,8 +30,7 @@ export class CollapsibleTree extends Component<CurveProps, CurveState> {
                 y: 0,
                 display: "none",
                 width: 35,
-                threshold: 0,
-                confusionMatrix: {TP: 0, TN: 0, FP: 0, FN: 0}
+                value: ""
             }
         }
     }
@@ -44,19 +41,13 @@ export class CollapsibleTree extends Component<CurveProps, CurveState> {
         //Do svg stuff
     }
 
-    onMouseOverEv = (e: any, x: number, y: number, threshold: number, confusionMatrix: ConfusionMatrix) => {
+    onMouseOverEv = (e: any, x: number, y: number, threshold: number) => {
         let tooltip: Tooltip = {
             x: x,
             y: y,
             display: "true",
             width: 35,
-            threshold: threshold,
-            confusionMatrix: {
-                TP: confusionMatrix.TP,
-                TN: confusionMatrix.TN,
-                FP: confusionMatrix.FP,
-                FN: confusionMatrix.FN
-            }
+            value: ""
         };
         this.setState({tooltip: {...tooltip}})
     };
@@ -67,8 +58,7 @@ export class CollapsibleTree extends Component<CurveProps, CurveState> {
             y: 0,
             display: "none",
             width: 35,
-            threshold: 0,
-            confusionMatrix: {TP: 0, TN: 0, FP: 0, FN: 0}
+            value: ""
         };
         this.setState({tooltip: {...tooltip}})
     };
