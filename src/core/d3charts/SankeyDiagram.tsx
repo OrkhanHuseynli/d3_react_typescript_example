@@ -47,8 +47,7 @@ export class SankeyDiagram extends Component<DiagramProps, DiagramState> {
                 y: 0,
                 display: "none",
                 width: 35,
-                threshold: 0,
-                confusionMatrix: {TP: 0, TN: 0, FP: 0, FN: 0}
+                height: 0
             }
         }
     }

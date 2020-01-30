@@ -94,7 +94,7 @@ export default class MainContainer extends Component<{ classes: any }, MainConta
 
     displaySankeyDiagram = (idName: string): JSX.Element => {
         return (<div className={this.props.classes.paper}>
-            <SankeyDiagram idName={idName} width={width} height={height}/>
+            <SankeyDiagram idName={idName} width={width} height={height} />
         </div>);
     };
 
